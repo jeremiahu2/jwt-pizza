@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     trace: 'on-first-retry',
-    baseURL: 'https://pizza.260domain.click'
+    baseURL: 'http://localhost:5173'
   },
 
   projects: [
@@ -28,4 +28,10 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
+
+webServer: {
+  command: 'npm run dev',
+  port: 5173,
+  reuseExistingServer: !process.env.CI,
+},
 });
