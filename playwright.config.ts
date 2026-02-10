@@ -9,6 +9,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     trace: 'on-first-retry',
+    baseURL: 'https://pizza.260domain.click'
   },
 
   projects: [
