@@ -229,13 +229,18 @@ test('register page', async ({ page }) => {
   await expect(page.locator('form')).toBeVisible();
 });
 
-// test('logout page', async ({ page }) => {
-//   await page.goto('/logout');
-//   await expect(page.locator('text=You have been logged out')).toBeVisible();
-// });
-
 test('visit menu and order', async ({ page }) => {
   await basicInit(page);
   await page.goto('/menu');
   await expect(page.locator('text=Veggie')).toBeVisible();
+});
+
+test('close franchise page renders', async ({ page }) => {
+  await page.goto('/close-franchise');
+  await expect(page.locator('body')).toBeVisible();
+});
+
+test('close store page renders', async ({ page }) => {
+  await page.goto('/close-store');
+  await expect(page.locator('body')).toBeVisible();
 });
