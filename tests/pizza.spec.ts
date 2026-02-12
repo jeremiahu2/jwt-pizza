@@ -119,6 +119,37 @@ test('admin dashboard renders', async ({ page }) => {
   await expect(page.getByText('Franchises')).toBeVisible();
 });
 
+test('diner dashboard renders', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('token', 'fake-token');
+  });
+  await page.route('**/api/user/me', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: '2',
+        name: 'Diner User',
+        email: 'diner@test.com',
+        roles: [{ role: 'diner' }],
+      }),
+    });
+  });
+  await page.route('**/api/order', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: 'history1',
+        dinerId: '2',
+        orders: [],
+      }),
+    });
+  });
+  await page.goto('/diner-dashboard');
+  await expect(page.getByText(/order/i)).toBeVisible();
+});
+
 test('login', async ({ page }) => {
   await basicInit(page);
   await page.getByRole('link', { name: 'Login' }).click();
