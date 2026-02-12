@@ -9,7 +9,9 @@ type RoleType = { role: string };
     password?: string;
     roles: RoleType[];
   };
-const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: 'diner' }] } };
+const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: 'diner' }] },
+                                           'a@jwt.com': { id: '1', name: 'Admin User', email: 'a@jwt.com', password: 'a', roles: [{ role: 'admin'}] },
+                                           'f@jwt.com': { id: '2', name: 'Franchise User', email: 'f@jwt.com', password: 'franchisee', roles: [{ role: 'Franchise'}] }};
 
 async function basicInit(page: Page) {
   let loggedInUser: User | undefined;
@@ -87,6 +89,36 @@ async function basicInit(page: Page) {
   await page.goto('/');
 }
 
+test('admin dashboard renders', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('token', 'fake-token');
+  });
+  await page.route('**/api/user/me', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: '1',
+        name: 'Admin User',
+        email: 'admin@test.com',
+        roles: [{ role: 'admin' }],
+      }),
+    });
+  });
+  await page.route('**/api/franchise*', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        franchises: [],
+        more: false,
+      }),
+    });
+  });
+  await page.goto('/admin-dashboard');
+  await expect(page.getByText('Franchises')).toBeVisible();
+});
+
 test('login', async ({ page }) => {
   await basicInit(page);
   await page.getByRole('link', { name: 'Login' }).click();
@@ -142,15 +174,3 @@ test('visit menu and order', async ({ page }) => {
   await page.goto('/menu');
   await expect(page.locator('text=Veggie')).toBeVisible();
 });
-
-// await page.goto('https://pizza.260domain.click/');
-// await page.getByRole('button', { name: 'Order now' }).click();
-// await page.getByRole('combobox').selectOption('34');
-// await page.getByRole('link', { name: 'Image Description Pepperoni' }).click();
-// await page.getByRole('button', { name: 'Checkout' }).click();
-// await page.getByRole('textbox', { name: 'Email address' }).click();
-// await page.getByRole('textbox', { name: 'Email address' }).fill('f@jwt.com');await page.getByRole('button', { name: 'Pay now' }).click();
-// await page.getByRole('textbox', { name: 'Password' }).click();
-// await page.getByRole('textbox', { name: 'Password' }).fill('franchisee');
-// await page.getByRole('button', { name: 'Login' }).click();
-// await page.getByRole('button', { name: 'Pay now' }).click();
