@@ -254,3 +254,13 @@ test('create store page renders', async ({ page }) => {
   await page.goto('/create-store');
   await expect(page.locator('body')).toBeVisible();
 });
+
+test('history page renders', async ({ page }) => {
+  await page.goto('/history');
+  await expect(page.locator('body')).toBeVisible();
+});
+
+test('logout page renders', async ({ page }) => {
+  await page.goto('/logout');
+  await expect(page.locator('body')).toBeVisible();
+});
