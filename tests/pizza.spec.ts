@@ -244,3 +244,13 @@ test('close store page renders', async ({ page }) => {
   await page.goto('/close-store');
   await expect(page.locator('body')).toBeVisible();
 });
+
+test('create franchise page renders', async ({ page }) => {
+  await page.goto('/create-franchise');
+  await expect(page.locator('body')).toBeVisible();
+});
+
+test('create store page renders', async ({ page }) => {
+  await page.goto('/create-store');
+  await expect(page.locator('body')).toBeVisible();
+});
