@@ -10,4 +10,9 @@ export default defineConfig({
       requireEnv: false,
     }),
   ],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000',
+    },
+  },
 });
