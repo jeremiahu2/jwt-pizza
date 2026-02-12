@@ -225,10 +225,14 @@ test('visit static pages', async ({ page }) => {
   }
 });
 
-test('register page', async ({ page }) => {
+test('register page submits', async ({ page }) => {
   await page.goto('/register');
-  await expect(page.locator('form')).toBeVisible();
+  await page.getByPlaceholder('Full name').fill('test');
+  await page.getByPlaceholder('Email address').fill('t@jwt.com');
+  await page.getByPlaceholder('Password').fill('test');
+  await page.getByRole('button', { name: 'Register' }).click();
 });
+
 
 test('visit menu and order', async ({ page }) => {
   await basicInit(page);
