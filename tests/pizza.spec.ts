@@ -150,6 +150,40 @@ test('diner dashboard renders', async ({ page }) => {
   await expect(page.getByText(/order/i)).toBeVisible();
 });
 
+test('franchise dashboard renders', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('token', 'fake-token');
+  });
+  await page.route('**/api/user/me', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: '3',
+        name: 'Franchise Owner',
+        email: 'franchise@test.com',
+        roles: [{ role: 'franchisee' }],
+      }),
+    });
+  });
+  await page.route('**/api/franchise/3', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: 'f1',
+          name: 'Test Franchise',
+          admins: [{ name: 'Franchise Owner', email: 'franchise@test.com' }],
+          stores: [],
+        },
+      ]),
+    });
+  });
+  await page.goto('/franchise-dashboard');
+  await expect(page.getByRole('columnheader', { name: 'Franchise Fee' })).toBeVisible();
+});
+
 test('login', async ({ page }) => {
   await basicInit(page);
   await page.getByRole('link', { name: 'Login' }).click();
