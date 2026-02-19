@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import View from './view';
 import { pizzaService } from '../service/service';
 import { Order, OrderHistory, Role, User } from '../service/pizzaService';
+import { CloseIcon } from '../icons';
+import { HSOverlay } from 'preline';
+import Button from '../components/button';
 
 interface Props {
   user: User | null;
@@ -20,6 +23,12 @@ export default function DinerDashboard(props: Props) {
       }
     })();
   }, [user]);
+
+  async function updateUser() {
+    setTimeout(() => {
+      HSOverlay.close(document.getElementById('hs-jwt-modal')!);
+    }, 100);
+  }
 
   function formatRole(role: { role: Role; objectId?: string }) {
     if (role.role === Role.Franchisee) {
