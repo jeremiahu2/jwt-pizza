@@ -16,12 +16,24 @@ export default function AdminDashboard(props: Props) {
   const [franchiseList, setFranchiseList] = React.useState<FranchiseList>({ franchises: [], more: false });
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
+  const [users, setUsers] = React.useState<User[]>([]);
+  const [userPage, setUserPage] = React.useState(0);
+  const filterUserRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     (async () => {
       setFranchiseList(await pizzaService.getFranchises(franchisePage, 3, '*'));
     })();
   }, [props.user, franchisePage]);
+
+  React.useEffect(() => {
+    if (Role.isRole(props.user, Role.Admin)) {
+      (async () => {
+        const usersList = await pizzaService.getUsers(userPage, 10, '*');
+        setUsers(usersList);
+      })();
+    }
+  }, [props.user, userPage]);
 
   function createFranchise() {
     navigate('/admin-dashboard/create-franchise');
@@ -37,6 +49,12 @@ export default function AdminDashboard(props: Props) {
 
   async function filterFranchises() {
     setFranchiseList(await pizzaService.getFranchises(franchisePage, 10, `*${filterFranchiseRef.current?.value}*`));
+  }
+
+  async function filterUsers() {
+    const filterValue = filterUserRef.current?.value || '';
+    const filteredUsers = await pizzaService.getUsers(userPage, 10, `*${filterValue}*`);
+    setUsers(filteredUsers);
   }
 
   let response = <NotFound />;
@@ -115,6 +133,70 @@ export default function AdminDashboard(props: Props) {
                       </tfoot>
                     </table>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 className="text-neutral-100 text-xl mt-8">Users</h3>
+        <div className="bg-neutral-100 overflow-clip my-4">
+          <div className="flex flex-col">
+            <div className="-m-1.5 overflow-x-auto">
+              <div className="p-1.5 min-w-full inline-block align-middle">
+                <div className="overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="uppercase text-neutral-100 bg-slate-400 border-b-2 border-gray-500">
+                      <tr>
+                        {['Name', 'Email', 'Roles', 'Action'].map((header) => (
+                          <th key={header} scope="col" className="px-6 py-3 text-center text-xs font-medium">{header}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((user) => (
+                        <tr key={user.id} className="border-t-2 border-neutral-500">
+                          <td className="px-6 py-2">{user.name}</td>
+                          <td className="px-6 py-2">{user.email}</td>
+                          <td className="px-6 py-2">{user.roles?.map(r => r.role).join(', ')}</td>
+                          <td className="px-6 py-2">
+                            <button
+                              className="px-2 py-1 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-orange-400 text-orange-400 hover:border-orange-800 hover:text-orange-800"
+                              // delete handler will come in Step 3
+                            >
+                              <TrashIcon />
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td className="px-2 py-2">
+                          <input
+                            type="text"
+                            ref={filterUserRef}
+                            placeholder="Filter users"
+                            className="px-2 py-1 text-sm border border-gray-300 rounded-lg"
+                          />
+                          <button
+                            className="ml-2 px-2 py-1 text-sm font-semibold rounded-lg border border-orange-400 text-orange-400 hover:border-orange-800 hover:text-orange-800"
+                            onClick={filterUsers}
+                          >
+                            Submit
+                          </button>
+                        </td>
+                        <td colSpan={3} className="text-end">
+                          <button onClick={() => setUserPage(userPage - 1)} disabled={userPage <= 0} className="px-2 py-1 border rounded mr-2">
+                            «
+                          </button>
+                          <button onClick={() => setUserPage(userPage + 1)} disabled={users.length < 10} className="px-2 py-1 border rounded">
+                            »
+                          </button>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
               </div>
             </div>
