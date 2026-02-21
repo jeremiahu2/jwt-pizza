@@ -8,6 +8,7 @@ test('admin can list users', async ({ page }) => {
   await page.getByRole('button', { name: 'Login' }).click();
   await page.getByRole('link', { name: 'Admin' }).click();
   await expect(page.getByRole('heading', { name: 'Users' })).toBeVisible();
+  await expect(page.getByText('Service Tester')).toBeVisible();
 });
 
 test('admin can delete a user', async ({ page }) => {
