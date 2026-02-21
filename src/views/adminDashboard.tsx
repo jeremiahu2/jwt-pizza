@@ -147,7 +147,7 @@ export default function AdminDashboard(props: Props) {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="uppercase text-neutral-100 bg-slate-400 border-b-2 border-gray-500">
                       <tr>
-                        {['Name', 'Email', 'Roles', 'Action'].map((header) => (
+                        {['ID', 'Name', 'Email', 'Action'].map((header) => (
                           <th key={header} scope="col" className="px-6 py-3 text-center text-xs font-medium">{header}</th>
                         ))}
                       </tr>
@@ -155,13 +155,26 @@ export default function AdminDashboard(props: Props) {
                     <tbody>
                       {users.map((user) => (
                         <tr key={user.id} className="border-t-2 border-neutral-500">
+                          <td className="px-6 py-2">{user.id}</td>
                           <td className="px-6 py-2">{user.name}</td>
                           <td className="px-6 py-2">{user.email}</td>
-                          <td className="px-6 py-2">{user.roles?.map(r => r.role).join(', ')}</td>
                           <td className="px-6 py-2">
                             <button
+                              onClick={async () => {
+                                try {
+                                  await fetch(`/api/user/${user.id}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                      Authorization: `Bearer ${localStorage.getItem('token')}`,
+                                    },
+                                  });
+
+                                  setUsers(prev => prev.filter(u => u.id !== user.id));
+                                } catch (err) {
+                                  console.error('Delete failed', err);
+                                }
+                              }}
                               className="px-2 py-1 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-orange-400 text-orange-400 hover:border-orange-800 hover:text-orange-800"
-                              // delete handler will come in Step 3
                             >
                               <TrashIcon />
                               Delete
