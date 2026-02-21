@@ -27,12 +27,16 @@ export default function AdminDashboard(props: Props) {
   }, [props.user, franchisePage]);
 
   React.useEffect(() => {
-    if (Role.isRole(props.user, Role.Admin)) {
-      (async () => {
-        const usersList = await pizzaService.getUsers(userPage, 10, '*');
-        setUsers(usersList);
-      })();
-    }
+    if (!Role.isRole(props.user, Role.Admin)) return;
+    (async () => {
+      const filterValue = filterUserRef.current?.value || '';
+      const usersList = await pizzaService.getUsers(
+        userPage,
+        10,
+        `*${filterValue}*`
+      );
+      setUsers(usersList);
+    })();
   }, [props.user, userPage]);
 
   function createFranchise() {
@@ -53,7 +57,12 @@ export default function AdminDashboard(props: Props) {
 
   async function filterUsers() {
     const filterValue = filterUserRef.current?.value || '';
-    const filteredUsers = await pizzaService.getUsers(userPage, 10, `*${filterValue}*`);
+    setUserPage(0);
+    const filteredUsers = await pizzaService.getUsers(
+      0,
+      10,
+      `*${filterValue}*`
+    );
     setUsers(filteredUsers);
   }
 
