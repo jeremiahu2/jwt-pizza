@@ -18,7 +18,7 @@ test('updateUser', async ({ page }) => {
       })
     });
   });
-  await page.route('**/api/user', async route => {
+  await page.route('**/api/user/**', async route => {
     if (route.request().method() === 'PUT') {
       const body = route.request().postDataJSON();
       currentUser.name = body.name;
@@ -28,6 +28,13 @@ test('updateUser', async ({ page }) => {
         body: JSON.stringify(currentUser)
       });
     }
+  });
+  await page.route('**/api/user/me', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(currentUser)
+    });
   });
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   await page.goto('/');
