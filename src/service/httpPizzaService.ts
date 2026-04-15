@@ -32,6 +32,7 @@ class HttpPizzaService implements PizzaService {
         console.log("PATH:", path);
         console.log("OPTIONS:", options);
         const r = await fetch(path, options);
+        // console.log("AFTER FETCH", r);
         const j = await r.json();
         if (r.ok) {
           resolve(j);
